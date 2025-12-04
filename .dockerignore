@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.gitignore
+README.md
+.env*.local
+*.log
+.DS_Store
+coverage
+tests
+jest.config.js
+.claude
+data/*.db
