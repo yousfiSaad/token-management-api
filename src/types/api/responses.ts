@@ -13,4 +13,19 @@ export interface CreateTokenResponse {
   token: string;
 }
 
-export type ListTokensResponse = CreateTokenResponse[];
+export type ListTokensResponse = TokenResponse[];
+
+export interface TokenResponse {
+  id: string;
+  userId: string;
+  scopes: string[];
+  token: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface SingleTokenResponse extends TokenResponse {
+  isExpired: boolean;
+  timeToExpiry: number;
+  scopeCount: number;
+}

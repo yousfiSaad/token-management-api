@@ -1,4 +1,4 @@
-import { validateCreateTokenRequest, validateUserId } from '@/lib/validators/token-validator';
+import { validateCreateTokenRequest, validateUserId } from '@/lib/shared/validators';
 
 describe('validateCreateTokenRequest', () => {
   it('should validate a correct request', () => {

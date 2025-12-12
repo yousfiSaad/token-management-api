@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TokenService } from '@/lib/services/token-service';
-import { validateApiKey } from '@/lib/middleware/auth';
-import { validateCreateTokenRequest, validateUserId } from '@/lib/validators/token-validator';
+import { validateApiKey } from '@/lib/shared/middleware';
+import { validateCreateTokenRequest, validateUserId } from '@/lib/shared/validators';
 import { createSuccessResponse, createErrorResponse, toApiResponse } from '@/utils/api/response';
 import { CreateTokenRequest } from '@/types/api/requests';
 import { ListTokensResponse } from '@/types/api/responses';
-import { getTokenRepository } from '@/lib/db/factory';
-
-let tokenService: TokenService | null = null;
-
-function getTokenService(): TokenService {
-  if (!tokenService) {
-    const repository = getTokenRepository();
-    tokenService = new TokenService(repository);
-  }
-  return tokenService;
-}
+import { tokenService } from '@/lib';
 
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -37,7 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // The validation passed, so body is safe to cast to CreateTokenRequest
     // This is type-safe because validation.valid === true implies the input matches the schema
     const data: CreateTokenRequest = body as CreateTokenRequest;
-    const token = getTokenService().createToken(data);
+    const token = tokenService.createToken(data);
 
     // Return response
     return createSuccessResponse(toApiResponse(token), 201);
@@ -64,7 +53,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Get tokens - userId is guaranteed to be string after validation
-    const tokens = getTokenService().getTokensForUser(userId!);
+    const tokens = tokenService.getTokensForUser(userId!);
 
     // Convert to API response format
     const response: ListTokensResponse = tokens.map(toApiResponse);

@@ -1,10 +1,8 @@
 import Database from 'better-sqlite3';
-import fs from 'fs';
-import path from 'path';
-import { ITokenRepository } from './index';
-import { Token } from '@/types/domain/token';
-import { CreateTokenRequest } from '@/types/api/requests';
-import { initializeDatabase } from './schema';
+import type { ITokenRepository } from '@/lib/data/interfaces/repository';
+import type { Token } from '@/lib/domain/models/token';
+import type { CreateTokenRequest } from '@/types/api/requests';
+import { initializeDatabase } from '@/lib/data/schema';
 import { generateToken } from '@/utils/token-generator';
 
 interface TokenRow {
@@ -20,12 +18,6 @@ export class SQLiteTokenRepository implements ITokenRepository {
   private db: Database.Database;
 
   constructor(dbPath: string) {
-    // Ensure directory exists before creating database
-    const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
     this.db = new Database(dbPath);
     initializeDatabase(this.db);
   }
@@ -77,6 +69,57 @@ export class SQLiteTokenRepository implements ITokenRepository {
       createdAt: new Date(row.createdAt),
       expiresAt: new Date(row.expiresAt),
     }));
+  }
+
+  findAllNonExpired(): Token[] {
+    const stmt = this.db.prepare(`
+      SELECT * FROM tokens
+      WHERE datetime(expiresAt) > datetime('now')
+      ORDER BY createdAt DESC
+    `);
+
+    const rows = stmt.all() as TokenRow[];
+
+    return rows.map(row => ({
+      id: row.id,
+      userId: row.userId,
+      scopes: JSON.parse(row.scopes),
+      token: row.token,
+      createdAt: new Date(row.createdAt),
+      expiresAt: new Date(row.expiresAt),
+    }));
+  }
+
+  async findById(id: string): Promise<Token | null> {
+    const stmt = this.db.prepare(`
+      SELECT * FROM tokens
+      WHERE id = ? AND datetime(expiresAt) > datetime('now')
+    `);
+
+    const row = stmt.get(id) as TokenRow | undefined;
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      id: row.id,
+      userId: row.userId,
+      scopes: JSON.parse(row.scopes),
+      token: row.token,
+      createdAt: new Date(row.createdAt),
+      expiresAt: new Date(row.expiresAt),
+    };
+  }
+
+  // New method to delete token by ID
+  async delete(id: string): Promise<boolean> {
+    const stmt = this.db.prepare(`
+      DELETE FROM tokens WHERE id = ?
+    `);
+
+    const result = stmt.run(id);
+    return (result.changes || 0) > 0;
   }
 
   close(): void {

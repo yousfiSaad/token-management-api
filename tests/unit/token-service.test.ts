@@ -1,7 +1,7 @@
-import { TokenService } from '@/lib/services/token-service';
-import { ITokenRepository } from '@/lib/db';
-import { Token } from '@/types/domain/token';
-import { CreateTokenRequest } from '@/types/api/requests';
+import { TokenService } from '@/lib/domain/services/token';
+import { ITokenRepository } from '@/lib/data';
+import type { Token } from '@/lib/domain/models/token';
+import type { CreateTokenRequest } from '@/types/api/requests';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -11,6 +11,8 @@ describe('TokenService', () => {
     mockRepository = {
       create: jest.fn(),
       findNonExpiredByUserId: jest.fn(),
+      findById: jest.fn(),
+      delete: jest.fn(),
     };
     service = new TokenService(mockRepository);
   });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { CreateTokenResponse } from "@/types/api/responses";
-import { Token } from "@/types/domain/token";
+import { TokenResponse } from "@/types/api/responses";
+import { Token } from "@/lib/domain/models/token";
 
 /**
  * Creates a successful JSON response with consistent format
@@ -12,7 +12,7 @@ export function createSuccessResponse<T>(
   data: T,
   status: number = 200,
 ): NextResponse {
-  return NextResponse.json(data, { status });
+    return NextResponse.json(data, { status });
 }
 
 /**
@@ -34,15 +34,15 @@ export function createErrorResponse(
  * Converts a Token domain model to API response format
  * Transforms Date objects to ISO strings for JSON serialization
  * @param token The token domain model with Date objects
- * @returns CreateTokenResponse API model with ISO date strings
+ * @returns TokenResponse API model with ISO date strings
  */
-export function toApiResponse(token: Token): CreateTokenResponse {
+export function toApiResponse(token: Token): TokenResponse {
   return {
     id: token.id,
     userId: token.userId,
     scopes: token.scopes,
+    token: token.token || '', // Include the token value if available
     createdAt: token.createdAt.toISOString(),
     expiresAt: token.expiresAt.toISOString(),
-    token: token.token,
   };
 }

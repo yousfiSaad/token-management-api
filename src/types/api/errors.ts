@@ -1,5 +1,5 @@
 // API error and response types
-import { UnifiedError } from '../common';
+import { UnifiedError } from '@/types/common';
 
 // Re-export unified error type for API usage
 export type { UnifiedError };

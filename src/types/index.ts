@@ -1,7 +1,7 @@
 // Re-export all types for backward compatibility
 
 // Domain types
-export type { Token } from './domain/token';
+export type { Token } from '@/lib/domain/models/token';
 
 // API types
 export type { CreateTokenRequest } from './api/requests';

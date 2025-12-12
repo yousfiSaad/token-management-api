@@ -5,9 +5,11 @@ module.exports = {
   testMatch: ['**/*.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^uuid$': '<rootDir>/jest-fixtures/uuid-mock.js',
   },
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
   ],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
 };
