@@ -1,5 +1,7 @@
 # Token Management API
 
+> **🎉 Bonus Feature**: Check out the [LLM-integration branch](../../tree/LLM-integration) for a natural language chat interface powered by Ollama!
+
 A minimal but clean TypeScript API service for managing access tokens for users, built with Next.js (App Router) and SQLite.
 
 ## Tech Stack
